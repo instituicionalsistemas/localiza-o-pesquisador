@@ -1,5 +1,4 @@
 // services/api.ts
-import { GoogleGenAI } from '@google/genai';
 import { supabase } from './supabase';
 import type { Admin, Campaign, Company, Researcher, SurveyResponse, Voucher, Question, QuestionOption, User, LocationPoint } from '../types';
 import { Gender, QuestionType, UserRole } from '../types';
@@ -247,43 +246,3 @@ export const getAllResearchersLastLocations = async (researcherIds: string[]): P
     const results = await Promise.all(locationPromises);
     return results.filter((point): point is LocationPoint => point !== null);
 }
-
-// --- Translation Service ---
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
-const translationCache = new Map<string, string>();
-
-export const translateTexts = async (texts: string[], targetLanguage: 'en' | 'es'): Promise<string[]> => {
-    if (!texts || texts.length === 0) {
-        return [];
-    }
-    const languageMap = { en: 'English', es: 'Spanish' };
-    const targetLangName = languageMap[targetLanguage];
-    
-    const textsToTranslate = texts.filter(text => text && !translationCache.has(`${targetLanguage}:${text}`));
-    const uniqueTextsToTranslate = [...new Set(textsToTranslate)];
-
-    if (uniqueTextsToTranslate.length > 0) {
-        try {
-            const prompt = `Translate the following JSON array of Portuguese strings into ${targetLangName}. Return ONLY a JSON array of the translated strings in the exact same order. Do not include any other text, explanations, or markdown formatting.\n\n${JSON.stringify(uniqueTextsToTranslate)}`;
-            const response = await ai.models.generateContent({
-                model: 'gemini-2.5-flash',
-                contents: [{ parts: [{ text: prompt }] }],
-            });
-
-            const cleanedJson = response.text.trim();
-            const translatedSnippets = JSON.parse(cleanedJson);
-
-            if (Array.isArray(translatedSnippets) && translatedSnippets.length === uniqueTextsToTranslate.length) {
-                uniqueTextsToTranslate.forEach((originalText, index) => {
-                    translationCache.set(`${targetLanguage}:${originalText}`, translatedSnippets[index]);
-                });
-            } else {
-                 console.error("Translation response mismatch:", { request: uniqueTextsToTranslate, response: translatedSnippets });
-            }
-        } catch (error) {
-            console.error("Gemini translation error:", error);
-        }
-    }
-
-    return texts.map(text => translationCache.get(`${targetLanguage}:${text}`) || text);
-};

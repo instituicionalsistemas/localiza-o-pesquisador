@@ -5,64 +5,12 @@ import ThemeToggle from './ThemeToggle';
 import { UserCircleIcon } from './icons/UserCircleIcon';
 import { ArrowLeftOnRectangleIcon } from './icons/ArrowLeftOnRectangleIcon';
 import { Bars3Icon } from './icons/Bars3Icon';
-import { useLanguage, Language } from '../contexts/ThemeContext';
-
-const BrazilFlagIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 9 6" {...props}>
-        <path fill="#009639" d="M0 0h9v6H0z"/>
-        <path fill="#FEDF00" d="M4.5 1.223L1.253 3l3.247 1.777L7.747 3z"/>
-        <circle cx="4.5" cy="3" r="1.06" fill="#002776"/>
-    </svg>
-);
-
-const UsaFlagIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 9 6" {...props}>
-        <path fill="#B22234" d="M0 0h9v6H0z"/>
-        <path fill="#fff" d="M0 1h9v1H0zm0 2h9v1H0zm0 2h9v1H0z"/>
-        <path fill="#3C3B6E" d="M0 0h4v3H0z"/>
-        <path fill="#fff" d="M.4 2.6h.4L1 .4l.2.2-.6.6h.6l-.2.2.6.6-.2.2-.6-.6-.2.2.6-.6h-.6l.2-.2-.6-.6.2-.2.6.6zM2 2.6h.4L2.6 .4l.2.2-.6.6h.6l-.2.2.6.6-.2.2-.6-.6-.2.2.6-.6h-.6l.2-.2-.6-.6.2-.2.6.6zM3.6 2.6h.4L4.2 .4l.2.2-.6.6h.6l-.2.2.6.6-.2.2-.6-.6-.2.2.6-.6h-.6l.2-.2-.6-.6.2-.2.6.6zM1.2 2.2h.4l.2-.2-.6-.6.2-.2.6.6V.4l.2.2-.6.6h.6l-.2.2.6.6-.2.2-.6-.6zM2.8 2.2h.4l.2-.2-.6-.6.2-.2.6.6V.4l.2.2-.6.6h.6l-.2.2.6.6-.2.2-.6-.6z"/>
-    </svg>
-);
-
-const SpainFlagIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 9 6" {...props}>
-        <path fill="#C60B1E" d="M0 0h9v6H0z"/>
-        <path fill="#FFC400" d="M0 1.5h9v3H0z"/>
-    </svg>
-);
-
-const LanguageSwitcher: React.FC = () => {
-    const { language, setLanguage } = useLanguage();
-
-    const languages: { code: Language; icon: React.FC<any> }[] = [
-        { code: 'pt', icon: BrazilFlagIcon },
-        { code: 'en', icon: UsaFlagIcon },
-        { code: 'es', icon: SpainFlagIcon },
-    ];
-
-    return (
-        <div className="flex items-center gap-3">
-            {languages.map(({ code, icon: Icon }) => (
-                <button
-                    key={code}
-                    onClick={() => setLanguage(code)}
-                    className={`rounded-full transition-all duration-200 focus:outline-none ${language === code ? 'ring-2 ring-offset-2 ring-light-primary ring-offset-light-background dark:ring-offset-dark-card' : 'hover:opacity-75'}`}
-                    aria-label={`Change language to ${code}`}
-                >
-                    <Icon className="w-8 h-5 rounded-full block" />
-                </button>
-            ))}
-        </div>
-    );
-};
-
 
 const Header: React.FC<{ title: string; onToggleSidebar?: () => void }> = ({ title, onToggleSidebar }) => {
   const { user, logout } = useAuth();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
-  const { t } = useLanguage();
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -112,10 +60,9 @@ const Header: React.FC<{ title: string; onToggleSidebar?: () => void }> = ({ tit
                     <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
                     <span className="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
                 </div>
-                <span className="hidden sm:block">{t('active')}</span>
+                <span className="hidden sm:block">Ativo</span>
             </div>
         )}
-        {user && user.role === 'user' && <LanguageSwitcher />}
         <ThemeToggle />
         {user && (
           <div className="relative" ref={menuRef}>
@@ -137,14 +84,14 @@ const Header: React.FC<{ title: string; onToggleSidebar?: () => void }> = ({ tit
                     className="flex items-center gap-3 w-full text-left px-4 py-2 text-sm text-light-text dark:text-dark-text hover:bg-gray-100 dark:hover:bg-dark-background"
                   >
                     <UserCircleIcon className="h-5 w-5" />
-                    {t('myProfile')}
+                    Meu Perfil
                   </Link>
                    <button
                     onClick={handleLogout}
                     className="flex items-center gap-3 w-full text-left px-4 py-2 text-sm text-light-text dark:text-dark-text hover:bg-gray-100 dark:hover:bg-dark-background"
                   >
                     <ArrowLeftOnRectangleIcon className="h-5 w-5" />
-                    {t('logout')}
+                    Sair
                   </button>
                 </div>
               </div>

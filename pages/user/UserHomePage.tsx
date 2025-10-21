@@ -1,9 +1,8 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import Header from '../../components/Header';
-import { getFullCampaigns, getResponses, addLocationUpdate, translateTexts } from '../../services/api';
+import { getFullCampaigns, getResponses, addLocationUpdate } from '../../services/api';
 import { useAuth } from '../../contexts/AuthContext';
-import { useLanguage } from '../../contexts/ThemeContext';
 import type { Campaign, SurveyResponse } from '../../types';
 import { MagnifyingGlassIcon } from '../../components/icons/MagnifyingGlassIcon';
 import { TagIcon } from '../../components/icons/TagIcon';
@@ -11,15 +10,11 @@ import LoadingSpinner from '../../components/LoadingSpinner';
 
 const UserHomePage: React.FC = () => {
   const { user } = useAuth();
-  const { language, t } = useLanguage();
   const [campaigns, setCampaigns] = useState<Campaign[]>([]);
   const [responses, setResponses] = useState<SurveyResponse[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const locationWatchId = React.useRef<number | null>(null);
-
-  const [translatedCampaigns, setTranslatedCampaigns] = useState<Campaign[] | null>(null);
-  const [isTranslating, setIsTranslating] = useState(false);
 
   useEffect(() => {
     const fetchCampaigns = async () => {
@@ -93,51 +88,18 @@ const UserHomePage: React.FC = () => {
       );
   }, [user, campaigns, searchQuery]);
   
-   useEffect(() => {
-    if (language === 'pt') {
-      setTranslatedCampaigns(null);
-      return;
-    }
-
-    const translateCampaigns = async () => {
-      if (availableCampaigns.length === 0) return;
-      setIsTranslating(true);
-
-      const names = availableCampaigns.map(c => c.name);
-      const descriptions = availableCampaigns.map(c => c.description);
-
-      const [translatedNames, translatedDescriptions] = await Promise.all([
-        translateTexts(names, language),
-        translateTexts(descriptions, language)
-      ]);
-
-      const newTranslatedCampaigns = availableCampaigns.map((campaign, index) => ({
-        ...campaign,
-        name: translatedNames[index] || campaign.name,
-        description: translatedDescriptions[index] || campaign.description,
-      }));
-
-      setTranslatedCampaigns(newTranslatedCampaigns);
-      setIsTranslating(false);
-    };
-
-    translateCampaigns();
-  }, [language, availableCampaigns]);
-  
-  const campaignsToDisplay = translatedCampaigns || availableCampaigns;
-
   return (
     <div className="min-h-screen bg-gray-100 dark:bg-dark-background text-light-text dark:text-dark-text">
-      <Header title={t('researcherDashboard')} />
+      <Header title="Painel do Pesquisador" />
       <main className="p-4 sm:p-8 max-w-7xl mx-auto">
         <section className="mb-12">
           <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4 mb-6">
-            <h2 className="text-3xl font-bold">{t('myAvailableCampaigns')}</h2>
+            <h2 className="text-3xl font-bold">Minhas Campanhas Disponíveis</h2>
             <div className="relative">
                 <MagnifyingGlassIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400 pointer-events-none" />
                 <input
                     type="text"
-                    placeholder={t('searchCampaign')}
+                    placeholder="Buscar campanha..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     className="w-full sm:w-64 bg-light-background dark:bg-dark-card py-2 pr-3 pl-10 border border-light-border dark:border-dark-border rounded-lg focus:outline-none focus:ring-2 focus:ring-light-primary"
@@ -145,13 +107,13 @@ const UserHomePage: React.FC = () => {
             </div>
           </div>
           
-          {isLoading || isTranslating ? (
+          {isLoading ? (
             <div className="text-center py-10">
-                <LoadingSpinner text={t('loadingCampaigns')} />
+                <LoadingSpinner text="Carregando campanhas" />
             </div>
-          ) : campaignsToDisplay.length > 0 ? (
+          ) : availableCampaigns.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {campaignsToDisplay.map((campaign) => {
+              {availableCampaigns.map((campaign) => {
                 const responseCount = getResponseCount(campaign.id);
                 const isGoalMet = campaign.responseGoal > 0 && responseCount >= campaign.responseGoal;
                 const progressPercentage = campaign.responseGoal > 0 ? Math.min((responseCount / campaign.responseGoal) * 100, 100) : 0;
@@ -170,7 +132,7 @@ const UserHomePage: React.FC = () => {
                     
                     <div className="mb-4">
                       <div className="flex justify-between items-center text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">
-                          <span>{t('progress')}</span>
+                          <span>Progresso</span>
                           <span>{responseCount} / {campaign.responseGoal}</span>
                       </div>
                       <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5">
@@ -191,7 +153,7 @@ const UserHomePage: React.FC = () => {
                       onClick={(e) => isGoalMet && e.preventDefault()}
                       aria-disabled={isGoalMet}
                     >
-                      {isGoalMet ? t('goalMet') : t('startSurvey')}
+                      {isGoalMet ? 'Meta Atingida' : 'Iniciar Pesquisa'}
                     </Link>
                   </div>
                 )
@@ -200,10 +162,10 @@ const UserHomePage: React.FC = () => {
           ) : (
             <div className="text-center py-10 bg-light-background dark:bg-dark-card rounded-lg shadow-md">
                 <p className="text-lg text-gray-600 dark:text-gray-400">
-                    {searchQuery ? t('noCampaignsFound') : t('noCampaignsAssigned')}
+                    {searchQuery ? 'Nenhuma campanha encontrada com esse nome.' : 'Nenhuma campanha foi atribuída a você no momento.'}
                 </p>
                 <p className="text-sm text-gray-500 mt-2">
-                    {searchQuery ? t('tryAnotherTerm') : t('contactAdmin')}
+                    {searchQuery ? 'Tente buscar por outro termo.' : 'Por favor, entre em contato com um administrador.'}
                 </p>
             </div>
           )}

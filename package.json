@@ -1,5 +1,5 @@
 {
-  "name": "pesquisa-inteligente-triad3---idioma-final",
+  "name": "copy-of-copy-of-copy-of-copy-of-pesquisa-inteligente-triad3---rastreamento",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -9,7 +9,6 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@google/genai": "^0.15.0",
     "@supabase/supabase-js": "^2.44.4",
     "recharts": "^3.3.0",
     "react": "^19.2.0",

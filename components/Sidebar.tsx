@@ -9,9 +9,11 @@ import { ShieldCheckIcon } from './icons/ShieldCheckIcon';
 import { UserCircleIcon } from './icons/UserCircleIcon';
 import { ArrowDownIcon } from './icons/ArrowDownIcon';
 import { FolderIcon } from './icons/FolderIcon';
+import { MapPinIcon } from './icons/MapPinIcon';
 
 const mainNavLinks = [
   { name: 'Dashboard', href: '/admin/dashboard', icon: ChartBarIcon },
+  { name: 'Mapa em Tempo Real', href: '/admin/map', icon: MapPinIcon },
   { name: 'Calendário', href: '/admin/calendar', icon: CalendarDaysIcon },
 ];
 

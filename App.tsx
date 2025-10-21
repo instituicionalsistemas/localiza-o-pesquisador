@@ -1,6 +1,7 @@
 
 
 
+
 import React from 'react';
 import { HashRouter as Router, Routes, Route, Navigate, Outlet } from 'react-router-dom';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
@@ -23,6 +24,7 @@ import AdminResearchersPage from './pages/admin/AdminResearchersPage';
 import AdminAdministratorsPage from './pages/admin/AdminAdministratorsPage';
 import AdminProfilePage from './pages/admin/AdminProfilePage';
 import ProfilePage from './pages/ProfilePage';
+import AdminMapPage from './pages/admin/AdminMapPage';
 
 // A wrapper for protected routes
 const ProtectedRoute: React.FC<{ allowedRoles: UserRole[] }> = ({ allowedRoles }) => {
@@ -70,6 +72,7 @@ function App() {
                     <Route path="researchers" element={<AdminResearchersPage />} />
                     <Route path="administrators" element={<AdminAdministratorsPage />} />
                     <Route path="calendar" element={<AdminCalendarPage />} />
+                    <Route path="map" element={<AdminMapPage />} />
                     <Route path="profile" element={<AdminProfilePage />} />
                 </Route>
             </Route>

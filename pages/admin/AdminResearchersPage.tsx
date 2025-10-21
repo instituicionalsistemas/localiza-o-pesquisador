@@ -1,5 +1,6 @@
 // pages/admin/AdminResearchersPage.tsx
 import React, { useState, useMemo, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { getResearchers, getFullCampaigns, getResponses } from '../../services/api';
 import { supabase } from '../../services/supabase';
 import type { Researcher, Campaign } from '../../types';
@@ -18,7 +19,7 @@ import { UserXIcon } from '../../components/icons/UserXIcon';
 import LoadingSpinner from '../../components/LoadingSpinner';
 import TrackingMapModal from '../../components/TrackingMapModal';
 import { MapIcon } from '../../components/icons/MapIcon';
-import AllResearchersMapModal from '../../components/AllResearchersMapModal';
+import { MapPinIcon } from '../../components/icons/MapPinIcon';
 
 const StatCard: React.FC<{ title: string; value: number; icon: React.ElementType, color: string }> = ({ title, value, icon: Icon, color }) => {
     return (
@@ -44,7 +45,6 @@ const AdminResearchersPage: React.FC = () => {
     const [isResearcherModalOpen, setIsResearcherModalOpen] = useState(false);
     const [isCampaignModalOpen, setIsCampaignModalOpen] = useState(false);
     const [isMapModalOpen, setIsMapModalOpen] = useState(false);
-    const [isAllResearchersMapOpen, setIsAllResearchersMapOpen] = useState(false);
     const [selectedResearcherForMap, setSelectedResearcherForMap] = useState<Researcher | null>(null);
     const [editingResearcher, setEditingResearcher] = useState<Researcher | null>(null);
     const [researcherToDelete, setResearcherToDelete] = useState<Researcher | null>(null);
@@ -245,10 +245,10 @@ const AdminResearchersPage: React.FC = () => {
             <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4 mb-8">
                 <h1 className="text-3xl font-bold">Gerenciar Pesquisadores</h1>
                  <div className="flex items-center gap-2">
-                    <button onClick={() => setIsAllResearchersMapOpen(true)} className="flex-shrink-0 flex items-center gap-2 bg-dark-secondary text-white font-semibold py-2 px-4 rounded-lg hover:opacity-90">
-                        <MapIcon className="h-5 w-5"/>
+                    <Link to="/admin/map" className="flex-shrink-0 flex items-center gap-2 bg-dark-secondary text-white font-semibold py-2 px-4 rounded-lg hover:opacity-90">
+                        <MapPinIcon className="h-5 w-5"/>
                         <span className="hidden sm:inline">Ver Mapa Geral</span>
-                    </button>
+                    </Link>
                     <button onClick={() => handleOpenResearcherModal(null)} className="flex-shrink-0 flex items-center gap-2 bg-gradient-to-r from-gradient-cyan to-gradient-blue text-white font-bold py-2 px-4 rounded-lg hover:opacity-90">
                         <PlusIcon className="h-5 w-5"/>
                         <span className="hidden sm:inline">Adicionar Pesquisador</span>
@@ -310,12 +310,6 @@ const AdminResearchersPage: React.FC = () => {
                     researcher={selectedResearcherForMap}
                 />
             )}
-            
-            <AllResearchersMapModal
-                isOpen={isAllResearchersMapOpen}
-                onClose={() => setIsAllResearchersMapOpen(false)}
-                researchers={researchers.filter(r => r.isActive)}
-            />
             
             <Modal isOpen={!!researcherToDelete} onClose={() => setResearcherToDelete(null)} title="Confirmar Exclusão">
                 <p>Tem certeza que deseja excluir o pesquisador "<strong>{researcherToDelete?.name}</strong>"? O acesso de login também será removido.</p>

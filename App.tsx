@@ -1,11 +1,7 @@
-
-
-
-
 import React from 'react';
 import { HashRouter as Router, Routes, Route, Navigate, Outlet } from 'react-router-dom';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
-import { ThemeProvider } from './contexts/ThemeContext';
+import { ThemeProvider, LanguageProvider } from './contexts/ThemeContext';
 import { UserRole } from './types';
 
 // Pages
@@ -39,49 +35,51 @@ const ProtectedRoute: React.FC<{ allowedRoles: UserRole[] }> = ({ allowedRoles }
 function App() {
   return (
     <ThemeProvider>
-      <AuthProvider>
-        <Router>
-          <Routes>
-            <Route path="/" element={<LoginPage />} />
-            <Route path="/login" element={<LoginPage />} />
-            
-            <Route path="/rewards/:campaignId" element={<RewardsPage />} />
+      <LanguageProvider>
+        <AuthProvider>
+          <Router>
+            <Routes>
+              <Route path="/" element={<LoginPage />} />
+              <Route path="/login" element={<LoginPage />} />
+              
+              <Route path="/rewards/:campaignId" element={<RewardsPage />} />
 
-            {/* User Routes */}
-            <Route element={<ProtectedRoute allowedRoles={[UserRole.USER]} />}>
-                <Route path="/user/home" element={<UserHomePage />} />
-                <Route path="/user/survey/:id" element={<SurveyPage />} />
-                <Route path="/user/profile" element={<ProfilePage />} />
-            </Route>
+              {/* User Routes */}
+              <Route element={<ProtectedRoute allowedRoles={[UserRole.USER]} />}>
+                  <Route path="/user/home" element={<UserHomePage />} />
+                  <Route path="/user/survey/:id" element={<SurveyPage />} />
+                  <Route path="/user/profile" element={<ProfilePage />} />
+              </Route>
 
-            {/* Company Routes */}
-            <Route element={<ProtectedRoute allowedRoles={[UserRole.COMPANY]} />}>
-                <Route path="/company/dashboard" element={<CompanyDashboardPage />} />
-                <Route path="/company/profile" element={<ProfilePage />} />
-            </Route>
+              {/* Company Routes */}
+              <Route element={<ProtectedRoute allowedRoles={[UserRole.COMPANY]} />}>
+                  <Route path="/company/dashboard" element={<CompanyDashboardPage />} />
+                  <Route path="/company/profile" element={<ProfilePage />} />
+              </Route>
 
-            {/* Admin Routes */}
-            <Route path="/admin" element={<ProtectedRoute allowedRoles={[UserRole.ADMIN]} />}>
-                <Route element={<AdminLayout />}>
-                    <Route index element={<Navigate to="/admin/dashboard" replace />} />
-                    <Route path="dashboard" element={<AdminDashboardPage />} />
-                    <Route path="campaigns" element={<AdminCampaignsPage />} />
-                    <Route path="campaigns/new" element={<CampaignEditorPage />} />
-                    <Route path="campaigns/edit/:id" element={<CampaignEditorPage />} />
-                    <Route path="companies" element={<AdminCompaniesPage />} />
-                    <Route path="researchers" element={<AdminResearchersPage />} />
-                    <Route path="administrators" element={<AdminAdministratorsPage />} />
-                    <Route path="calendar" element={<AdminCalendarPage />} />
-                    <Route path="map" element={<AdminMapPage />} />
-                    <Route path="profile" element={<AdminProfilePage />} />
-                </Route>
-            </Route>
+              {/* Admin Routes */}
+              <Route path="/admin" element={<ProtectedRoute allowedRoles={[UserRole.ADMIN]} />}>
+                  <Route element={<AdminLayout />}>
+                      <Route index element={<Navigate to="/admin/dashboard" replace />} />
+                      <Route path="dashboard" element={<AdminDashboardPage />} />
+                      <Route path="campaigns" element={<AdminCampaignsPage />} />
+                      <Route path="campaigns/new" element={<CampaignEditorPage />} />
+                      <Route path="campaigns/edit/:id" element={<CampaignEditorPage />} />
+                      <Route path="companies" element={<AdminCompaniesPage />} />
+                      <Route path="researchers" element={<AdminResearchersPage />} />
+                      <Route path="administrators" element={<AdminAdministratorsPage />} />
+                      <Route path="calendar" element={<AdminCalendarPage />} />
+                      <Route path="map" element={<AdminMapPage />} />
+                      <Route path="profile" element={<AdminProfilePage />} />
+                  </Route>
+              </Route>
 
-            {/* Fallback route */}
-            <Route path="*" element={<Navigate to="/" />} />
-          </Routes>
-        </Router>
-      </AuthProvider>
+              {/* Fallback route */}
+              <Route path="*" element={<Navigate to="/" />} />
+            </Routes>
+          </Router>
+        </AuthProvider>
+      </LanguageProvider>
     </ThemeProvider>
   );
 }
